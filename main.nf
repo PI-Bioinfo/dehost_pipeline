@@ -42,3 +42,5 @@ workflow {
     // Continue with the existing process 
     validated_samples = receive_samples(sra_data)
 }
+
+
