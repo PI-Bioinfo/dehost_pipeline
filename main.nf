@@ -35,3 +35,10 @@ process receive_samples {
     """
 }
 
+workflow {
+    // Fetch and process SRA data 
+    sra_data = retrieve_sra(params.sra_accessions)
+
+    // Continue with the existing process 
+    validated_samples = receive_samples(sra_data)
+}
