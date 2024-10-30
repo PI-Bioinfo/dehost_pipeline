@@ -1,6 +1,6 @@
 #!/usr/bin/env nextflow 
 
-nextflow.enable.dsl=1
+nextflow.enable.dsl=2
 
 params.sra_accessions = 'SRX26126976'
 
