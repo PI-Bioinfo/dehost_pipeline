@@ -2,46 +2,28 @@
 
 nextflow.enable.dsl=2
 
-params.sra_accessions = 'SRX26126976'
+params.sra_accessions_file = 'accessions.txt' // Make sure this file exists!  
 
-process retrieve_sra  {
-    input:
-    val sra_accessions
+process retrieve_sra {  
+    input:  
+    path sra_accessions_file  
 
-    output:
-    path 'data/*.fastq'
+    output:  
+    path 'data/*_1.fastq', emit: paired1  
+    path 'data/*_2.fastq', emit: paired2  
 
-    script:
-    """
-    # Load SRA Toolkit 
-    module load sratoolkit 
+    script:  
+    """  
+    # Create output directory if not exists  
+    mkdir -p data  
 
-    # Download SRA data using fastq-dump 
-    fastq-dump --split-files --outdir data ${sra_accessions}
-    """
-}
+    # Read each accession from the file and download using fastq-dump  
+    while read accession; do  
+        fastq-dump --split-files --outdir data \$accession  
+    done < ${sra_accessions_file}  
+    """  
+}  
 
-
-process receive_samples { 
-    input: 
-    path sample_files
-
-    output: 
-    path 'confirmed_samples/*'
-
-    script:
-    """
-    # Validate script
-    """
-}
-
-workflow {
-    // Fetch and process SRA data 
-    sra_data = retrieve_sra(params.sra_accessions)
-
-    // Continue with the existing process 
-    validated_samples = receive_samples(sra_data)
-}
-
-
-# this is a test
+workflow {  
+    retrieve_sra()  
+}  
