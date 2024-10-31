@@ -2,28 +2,29 @@
 
 nextflow.enable.dsl=2
 
-params.sra_accessions_file = 'accessions.txt' // Make sure this file exists!  
+params.sra_accessions = 'SRR30723710'
 
-process retrieve_sra {  
-    input:  
-    path sra_accessions_file  
+process retrieve_sra  {
+    input:
+    val sra_accessions
 
-    output:  
-    path 'data/*_1.fastq', emit: paired1  
-    path 'data/*_2.fastq', emit: paired2  
+    output:
+    path 'data/*.fastq'
 
-    script:  
-    """  
-    # Create output directory if not exists  
-    mkdir -p data  
+    script:
+    """
+    mkdir -p data  # Create output directory if it doesn't exist  
 
-    # Read each accession from the file and download using fastq-dump  
-    while read accession; do  
-        fastq-dump --split-files --outdir data \$accession  
-    done < ${sra_accessions_file}  
-    """  
-}  
+    # Download SRA data using fastq-dump 
+    fastq-dump --outdir data ${sra_accessions}
+    """
+}
 
 workflow {  
-    retrieve_sra()  
+    // Call the retrieve_sra process with the specified SRA accession  
+    retrieve_sra(params.sra_accessions)  
 }  
+
+
+
+
