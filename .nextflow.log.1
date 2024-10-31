@@ -1,0 +1,88 @@
+Oct-31 09:32:05.375 [main] DEBUG nextflow.cli.Launcher - $> nextflow run main.nf
+Oct-31 09:32:05.425 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 23.10.1
+Oct-31 09:32:05.444 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; embedded=false; plugins-dir=/home/xingau/.nextflow/plugins; core-plugins: nf-amazon@2.1.4,nf-azure@1.3.3,nf-cloudcache@0.3.0,nf-codecommit@0.1.5,nf-console@1.0.6,nf-ga4gh@1.1.0,nf-google@1.8.3,nf-tower@1.6.3,nf-wave@1.0.1
+Oct-31 09:32:05.453 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Oct-31 09:32:05.453 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Oct-31 09:32:05.456 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.4.1 in 'deployment' mode
+Oct-31 09:32:05.463 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Oct-31 09:32:05.511 [main] DEBUG nextflow.cli.CmdRun - Applied DSL=2 from script declararion
+Oct-31 09:32:05.528 [main] INFO  nextflow.cli.CmdRun - Launching `main.nf` [desperate_pike] DSL2 - revision: b922239b79
+Oct-31 09:32:05.529 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+Oct-31 09:32:05.529 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins resolved requirement=[]
+Oct-31 09:32:05.537 [main] DEBUG n.secret.LocalSecretsProvider - Secrets store: /home/xingau/.nextflow/secrets/store.json
+Oct-31 09:32:05.543 [main] DEBUG nextflow.secret.SecretsLoader - Discovered secrets providers: [nextflow.secret.LocalSecretsProvider@693e4d19] - activable => nextflow.secret.LocalSecretsProvider@693e4d19
+Oct-31 09:32:05.609 [main] DEBUG nextflow.Session - Session UUID: 39cb4117-f911-46e0-b981-47da84d25f7a
+Oct-31 09:32:05.609 [main] DEBUG nextflow.Session - Run name: desperate_pike
+Oct-31 09:32:05.611 [main] DEBUG nextflow.Session - Executor pool size: 16
+Oct-31 09:32:05.618 [main] DEBUG nextflow.file.FilePorter - File porter settings maxRetries=3; maxTransfers=50; pollTimeout=null
+Oct-31 09:32:05.623 [main] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'FileTransfer' minSize=10; maxSize=48; workQueue=LinkedBlockingQueue[10000]; allowCoreThreadTimeout=false
+Oct-31 09:32:05.649 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 23.10.1 build 5891
+  Created: 12-01-2024 22:01 UTC (13-01-2024 05:01 ICST)
+  System: Linux 5.15.0-124-generic
+  Runtime: Groovy 3.0.19 on Java HotSpot(TM) 64-Bit Server VM 17.0.10+11-LTS-240
+  Encoding: UTF-8 (UTF-8)
+  Process: 3042293@xingau [127.0.1.1]
+  CPUs: 16 - Mem: 62.6 GB (42.2 GB) - Swap: 2 GB (2 GB)
+Oct-31 09:32:05.672 [main] DEBUG nextflow.Session - Work-dir: /home/xingau/Desktop/cv19_pipeline/work [ext2/ext3]
+Oct-31 09:32:05.672 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /home/xingau/Desktop/cv19_pipeline/bin
+Oct-31 09:32:05.681 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+Oct-31 09:32:05.688 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Oct-31 09:32:05.707 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
+Oct-31 09:32:05.718 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 17; maxThreads: 1000
+Oct-31 09:32:05.780 [main] DEBUG nextflow.Session - Session start
+Oct-31 09:32:06.208 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Oct-31 09:32:06.278 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Oct-31 09:32:06.278 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Oct-31 09:32:06.282 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+Oct-31 09:32:06.287 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=16; memory=62.6 GB; capacity=16; pollInterval=100ms; dumpInterval=5m
+Oct-31 09:32:06.289 [main] DEBUG n.processor.TaskPollingMonitor - >>> barrier register (monitor: local)
+Oct-31 09:32:06.358 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Oct-31 09:32:06.358 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Oct-31 09:32:06.360 [main] DEBUG nextflow.Session - Workflow process names [dsl2]: retrieve_sra, receive_samples
+Oct-31 09:32:06.360 [main] DEBUG nextflow.Session - Igniting dataflow network (2)
+Oct-31 09:32:06.361 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > retrieve_sra
+Oct-31 09:32:06.361 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > receive_samples
+Oct-31 09:32:06.361 [main] DEBUG nextflow.script.ScriptRunner - Parsed script files:
+  Script_dd487757f2066d03: /home/xingau/Desktop/cv19_pipeline/main.nf
+Oct-31 09:32:06.362 [main] DEBUG nextflow.script.ScriptRunner - > Awaiting termination 
+Oct-31 09:32:06.362 [main] DEBUG nextflow.Session - Session await
+Oct-31 09:32:06.443 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Oct-31 09:32:06.445 [Task submitter] INFO  nextflow.Session - [a1/7aca94] Submitted process > retrieve_sra
+Oct-31 09:32:06.462 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 1; name: retrieve_sra; status: COMPLETED; exit: 127; error: -; workDir: /home/xingau/Desktop/cv19_pipeline/work/a1/7aca945a2d936ad30acdc89377f8a9]
+Oct-31 09:32:06.464 [Task monitor] DEBUG nextflow.processor.TaskProcessor - Handling unexpected condition for
+  task: name=retrieve_sra; work-dir=/home/xingau/Desktop/cv19_pipeline/work/a1/7aca945a2d936ad30acdc89377f8a9
+  error [nextflow.exception.ProcessFailedException]: Process `retrieve_sra` terminated with an error exit status (127)
+Oct-31 09:32:06.470 [Task monitor] ERROR nextflow.processor.TaskProcessor - Error executing process > 'retrieve_sra'
+
+Caused by:
+  Process `retrieve_sra` terminated with an error exit status (127)
+
+Command executed:
+
+  # Load SRA Toolkit 
+  module load sratoolkit 
+  
+  # Download SRA data using fastq-dump 
+  fastq-dump --split-files --outdir data SRX26126976
+
+Command exit status:
+  127
+
+Command output:
+  (empty)
+
+Command error:
+  .command.sh: line 3: module: command not found
+
+Work dir:
+  /home/xingau/Desktop/cv19_pipeline/work/a1/7aca945a2d936ad30acdc89377f8a9
+
+Tip: view the complete command output by changing to the process work dir and entering the command `cat .command.out`
+Oct-31 09:32:06.474 [main] DEBUG nextflow.Session - Session await > all processes finished
+Oct-31 09:32:06.475 [Task monitor] DEBUG nextflow.Session - Session aborted -- Cause: Process `retrieve_sra` terminated with an error exit status (127)
+Oct-31 09:32:06.488 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Oct-31 09:32:06.489 [Task monitor] DEBUG n.processor.TaskPollingMonitor - <<< barrier arrives (monitor: local) - terminating tasks monitor poll loop
+Oct-31 09:32:06.492 [main] DEBUG n.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=0; failedCount=1; ignoredCount=0; cachedCount=0; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=0ms; failedDuration=11ms; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=1; peakCpus=1; peakMemory=0; ]
+Oct-31 09:32:06.692 [main] DEBUG nextflow.cache.CacheDB - Closing CacheDB done
+Oct-31 09:32:06.705 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye
