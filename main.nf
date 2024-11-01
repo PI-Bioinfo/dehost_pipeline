@@ -70,7 +70,9 @@ process receive_host {
     script:   
     """  
     # Download human genome  
-    wget ${params.genome_ref} -O host_info  
+    wget ${params.genome_ref} -O host_info.gz  
+    # Decompress the downloaded file  
+    gunzip host_info.gz  
     """  
 } 
 
@@ -90,7 +92,6 @@ workflow {
 
     host_info = receive_host(params.genome_ref)  
 }
-
 
 
 
