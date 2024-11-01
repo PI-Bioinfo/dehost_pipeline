@@ -3,6 +3,7 @@
 nextflow.enable.dsl=2  
 
 params.sra_accessions_file = 'SRR_Acc_List.txt'  
+params.genome_ref = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.fna.gz'  
 
 process retrieve_sra {  
     input:  
@@ -59,6 +60,20 @@ process receive_samples {
     """  
 }
 
+process receive_host {  
+    input:  
+    path host_file  
+
+    output:   
+    path 'host_info'  
+
+    script:   
+    """  
+    # Download human genome  
+    wget ${params.genome_ref} -O host_info  
+    """  
+} 
+
 
 workflow {  
     Channel.fromPath(params.sra_accessions_file)  
@@ -72,6 +87,8 @@ workflow {
 
     // Connect the output of retrieve_sra to receive_samples  
     retrieve_sra.out | receive_samples  
+
+    host_info = receive_host(params.genome_ref)  
 }
 
 
