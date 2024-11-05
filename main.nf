@@ -5,7 +5,6 @@ nextflow.enable.dsl=2
 params.sra_accessions_file = 'SRR_Acc_List.txt'  
 params.genome_ref = 'https://hgdownload.soe.ucsc.edu/goldenpath/hg38/bigZips/hg38.fa.gz'  
 params.validated_sample = 'validated_samples'  // Define the validated samples directory  
-params.host_genome_index_prefix = 'host_genome' // Assume index prefix for the Bowtie2 index  
 
 process retrieve_sra {  
     input:  
@@ -78,24 +77,23 @@ process receive_host {
     """  
 } 
 
+process prepare_host_genome {  
+    input:  
+    path host_genome_file // Accept the downloaded genome file as input  
 
-// Process to dehost paired samples  
-process dehost_samples {  
-    input:   
-    tuple path(sample_files_pair1), path(sample_files_pair2)  
-    path host_index_prefix from host_genome_index  
+    output:  
+    path 'host_genome_index'  
 
-    output:   
-    tuple path('dehosted_fastq/dehosted_R1.fastq'), path('dehosted_fastq/dehosted_R2.fastq')  
-
-    script:   
+    script:  
     """  
-    mkdir -p dehosted_fastq  
-    bowtie2 -x ${host_index_prefix} -1 ${sample_files_pair1} -2 ${sample_files_pair2} --un-conc dehosted_fastq/dehosted.fastq -S /dev/null  
-    mv dehosted.fastq.1 dehosted_fastq/dehosted_R1.fastq  
-    mv dehosted.fastq.2 dehosted_fastq/dehosted_R2.fastq  
+    mkdir -p host_genome_index  
+    bowtie2-build ${host_genome_file} host_genome_index/host_genome  
     """  
-}  
+
+
+}
+
+
 
 workflow {  
     // Load the SRA accessions from the specified file  
@@ -113,15 +111,10 @@ workflow {
 
     // Store the result of receive_host  
     host_info_channel = receive_host(params.genome_ref)  
+    host_info_channel | prepare_host_genome   
+    
+    
+}
 
-    // Load validated samples  
-    Channel.fromFilePairs("${params.validated_sample}/*_{R1,R2}.fastq", flat: true)  
-        .set { paired_samples }  
 
-    // Debugging: Print the contents of paired_samples  
-    paired_samples.view { "Paired samples: $it" }  
 
-    // Dehost samples  
-    paired_samples  
-        .map { (file1, file2) -> dehost_samples(file1, file2, params.host_genome_index_prefix) }  
-}  
