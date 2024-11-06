@@ -33,7 +33,6 @@ process retrieve_sra {
 
 process receive_samples {  
     input:  
-    // path sample_files // Input path for sample files  
     tuple val(sra_accession), path(sample_files)
 
     output:  
@@ -93,59 +92,28 @@ process prepare_host_genome {
     """  
 }
 
-// process align_reads {  
-//     input:  
-//     tuple val(sra_accession), path(fastq_files), path(host_genome_index) // Correct syntax  
-
-//     output:  
-//     tuple val(sra_accession), path("${sra_accession}_aligned.bam")  
-
-//     script:  
-//     """  
-//     bowtie2 -x ${host_genome_index}/host_genome -1 ${fastq_files[0]} -2 ${fastq_files[1]} | samtools view -bS - > ${sra_accession}_aligned.bam  
-//     """  
-// }
-
-process align_reads {
+process dehost {
     input:
-    tuple val(sra_accession), path(fastq_files), path(host_genome_index) // Correct input tuple format
+    tuple val(sra_accession), path(fastq_files), path(host_genome_index) 
 
     output:
-    tuple val(sra_accession), path("${sra_accession}_aligned.bam") // Output BAM file with sra_accession label
+    tuple val(sra_accession), path("${sra_accession}_human.fasta"), path("${sra_accession}_microbiome.fasta")
 
     script:
     """
     bowtie2 -x ${host_genome_index}/host_genome \
         -1 ${fastq_files[0]} -2 ${fastq_files[1]} | samtools view -bS - > ${sra_accession}_aligned.bam
+    
+    samtools view -b -F 4 ${sra_accession}_aligned.bam | \
+    bedtools bamtofastq -i stdin | \
+    seqtk seq -A - > ${sra_accession}_human.fasta
+    
+    samtools view -b -f 4 ${sra_accession}_aligned.bam | \
+    bedtools bamtofastq -i stdin | \
+    seqtk seq -A - > ${sra_accession}_microbiome.fasta
     """
-}
+} 
 
-
-// workflow {  
-//     // Load the SRA accessions from the specified file  
-//     Channel.fromPath(params.sra_accessions_file)  
-//         .flatMap { file -> file.text.readLines() }  
-//         .map { line -> line.trim() }  
-//         .filter { it } // Ensures only non-empty lines are processed  
-//         .set { accessions }  
-   
-
-//     sra_data = accessions | retrieve_sra
-
-    
-//     // Call the retrieve_sra process with each SRA accession  
-//     validated_samples = sra_data | receive_samples // work
-
-
-//     // Store the result of receive_host  
-//     host_info_channel = receive_host(params.genome_ref)  
-//     host_index = host_info_channel | prepare_host_genome   
-    
-//     // Alignment
-//     sra_data_for_alignment = accessions.combine(sra_data)  
-//     aligned_data = sra_data_for_alignment.combine(host_index) | align_reads //work
-
-// }
 
 workflow {
     // Load the SRA accessions from the specified file
@@ -166,5 +134,9 @@ workflow {
     host_index = host_info_channel | prepare_host_genome
 
     // Combine sra_data and host_index channels for alignment
-    aligned_data = sra_data.combine(host_index) | align_reads
+    dehost_data = sra_data.combine(host_index) | dehost
 }
+
+
+
+
