@@ -4,7 +4,7 @@ nextflow.enable.dsl=2
 
 params.sra_accessions_file = 'SRR_Acc_List.txt'  
 params.genome_ref = 'https://hgdownload.soe.ucsc.edu/goldenpath/hg38/bigZips/hg38.fa.gz'  
-params.validated_sample = 'validated_samples'  // Define the validated samples directory  
+params.validated_sample = 'validated_samples'  
 
 process retrieve_sra {  
     input:  
@@ -113,7 +113,6 @@ process dehost {
     seqtk seq -A - > ${sra_accession}_microbiome.fasta
     """
 } 
-
 
 workflow {
     // Load the SRA accessions from the specified file
