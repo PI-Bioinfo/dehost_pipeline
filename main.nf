@@ -10,8 +10,9 @@ process retrieve_sra {
     input:  
     val sra_accession  // Input parameter for a single SRA accession  
 
-    output:  
-    path "data/${sra_accession}*.fastq" // Output path for downloaded FASTQ files  
+    output:
+    // path "data/${sra_accession}*.fastq", emit: sample_files  // Emits the FASTQ files with just the path
+    tuple val(sra_accession), path("data/${sra_accession}*.fastq") , emit: sample_files 
 
     errorStrategy 'retry' // Continue to the next accession on error  
 
@@ -32,7 +33,8 @@ process retrieve_sra {
 
 process receive_samples {  
     input:  
-    path sample_files // Input path for sample files  
+    // path sample_files // Input path for sample files  
+    tuple val(sra_accession), path(sample_files)
 
     output:  
     path 'validated_samples/*' // Corrected quotation marks  
@@ -89,32 +91,80 @@ process prepare_host_genome {
     mkdir -p host_genome_index  
     bowtie2-build ${host_genome_file} host_genome_index/host_genome  
     """  
+}
 
+// process align_reads {  
+//     input:  
+//     tuple val(sra_accession), path(fastq_files), path(host_genome_index) // Correct syntax  
 
+//     output:  
+//     tuple val(sra_accession), path("${sra_accession}_aligned.bam")  
+
+//     script:  
+//     """  
+//     bowtie2 -x ${host_genome_index}/host_genome -1 ${fastq_files[0]} -2 ${fastq_files[1]} | samtools view -bS - > ${sra_accession}_aligned.bam  
+//     """  
+// }
+
+process align_reads {
+    input:
+    tuple val(sra_accession), path(fastq_files), path(host_genome_index) // Correct input tuple format
+
+    output:
+    tuple val(sra_accession), path("${sra_accession}_aligned.bam") // Output BAM file with sra_accession label
+
+    script:
+    """
+    bowtie2 -x ${host_genome_index}/host_genome \
+        -1 ${fastq_files[0]} -2 ${fastq_files[1]} | samtools view -bS - > ${sra_accession}_aligned.bam
+    """
 }
 
 
+// workflow {  
+//     // Load the SRA accessions from the specified file  
+//     Channel.fromPath(params.sra_accessions_file)  
+//         .flatMap { file -> file.text.readLines() }  
+//         .map { line -> line.trim() }  
+//         .filter { it } // Ensures only non-empty lines are processed  
+//         .set { accessions }  
+   
 
-workflow {  
-    // Load the SRA accessions from the specified file  
-    Channel.fromPath(params.sra_accessions_file)  
-        .flatMap { file -> file.text.readLines() }  
-        .map { line -> line.trim() }  
-        .filter { it } // Ensures only non-empty lines are processed  
-        .set { accessions }  
+//     sra_data = accessions | retrieve_sra
 
-    // Call the retrieve_sra process with each SRA accession  
-    accessions | retrieve_sra   
-
-    // Connect the output of retrieve_sra to receive_samples  
-    retrieve_sra.out | receive_samples  
-
-    // Store the result of receive_host  
-    host_info_channel = receive_host(params.genome_ref)  
-    host_info_channel | prepare_host_genome   
     
+//     // Call the retrieve_sra process with each SRA accession  
+//     validated_samples = sra_data | receive_samples // work
+
+
+//     // Store the result of receive_host  
+//     host_info_channel = receive_host(params.genome_ref)  
+//     host_index = host_info_channel | prepare_host_genome   
     
+//     // Alignment
+//     sra_data_for_alignment = accessions.combine(sra_data)  
+//     aligned_data = sra_data_for_alignment.combine(host_index) | align_reads //work
+
+// }
+
+workflow {
+    // Load the SRA accessions from the specified file
+    Channel.fromPath(params.sra_accessions_file)
+        .flatMap { file -> file.text.readLines() }
+        .map { line -> line.trim() }
+        .filter { it } // Ensures only non-empty lines are processed
+        .set { accessions }
+
+    // Run SRA retrieval and emit tuples with (sra_accession, fastq_files)
+    sra_data = accessions | retrieve_sra
+
+    // Validate samples from retrieved SRA data
+    validated_samples = sra_data | receive_samples
+
+    // Prepare host genome
+    host_info_channel = receive_host(params.genome_ref)
+    host_index = host_info_channel | prepare_host_genome
+
+    // Combine sra_data and host_index channels for alignment
+    aligned_data = sra_data.combine(host_index) | align_reads
 }
-
-
-
