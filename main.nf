@@ -6,6 +6,10 @@ params.sra_accessions_file = 'SRR_Acc_List.txt'
 params.genome_ref = 'https://hgdownload.soe.ucsc.edu/goldenpath/hg38/bigZips/hg38.fa.gz'  
 params.validated_sample = 'validated_samples'  
 
+// Most of the process need resource allocation 
+//    memory '4 GB'
+//    cpus 2
+
 process retrieve_sra {  
     input:  
     val sra_accession  // Input parameter for a single SRA accession  
@@ -15,6 +19,12 @@ process retrieve_sra {
     tuple val(sra_accession), path("data/${sra_accession}*.fastq") , emit: sample_files 
 
     errorStrategy 'retry' // Continue to the next accession on error  
+
+// this section need some sort of input validation ;)
+// Something like if (!params.sra_accessions_file) {
+//    error "Please provide SRA accessions --sra_accessions_file"
+// }
+// Perhaps also make sure that list are only 1 column only ?
 
     script:  
     """  
@@ -30,7 +40,7 @@ process retrieve_sra {
     sleep 10  
     """  
 }  
-
+// This is very thoughtful, I didn't think of this at the beginning :) 
 process receive_samples {  
     input:  
     tuple val(sra_accession), path(sample_files)
@@ -61,6 +71,8 @@ process receive_samples {
     done  
     """  
 }
+// This probably can be done only one - say we build the host_genome once, then attached it in the step
+// if host_genome already built, then use existing, if not, then prepare host genome.
 
 process receive_host {  
     input:  
@@ -91,7 +103,7 @@ process prepare_host_genome {
     bowtie2-build ${host_genome_file} host_genome_index/host_genome  
     """  
 }
-
+// output should be bgzip ;) 
 process dehost {
     input:
     tuple val(sra_accession), path(fastq_files), path(host_genome_index) 
